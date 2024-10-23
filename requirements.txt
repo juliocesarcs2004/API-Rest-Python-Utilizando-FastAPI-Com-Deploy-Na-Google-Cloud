@@ -6,3 +6,7 @@ psycopg2==2.9.10
 
 # TESTS
 pytest==8.3.3
+
+
+# TOOLS
+alembic==1.13.3
