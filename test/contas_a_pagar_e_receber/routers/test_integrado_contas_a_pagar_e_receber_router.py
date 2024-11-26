@@ -57,3 +57,49 @@ def test_deve_criar_conta_a_pagar_e_receber():
     response = client.post("/contas-a-pagar-e-receber", json=nova_conta)
     assert response.status_code == 201
     assert response.json() == nova_conta_copy
+
+
+def test_deve_retornar_erro_quando_exceder_a_descricao():
+    response = client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "01",
+        "valor": 333.00,
+        "tipo": "PAGAR"
+    })
+    assert response.status_code == 422
+    assert response.json()['detail'][0]['loc'] == ["body", "descricao"]
+
+
+def test_deve_retornar_erro_quando_a_descricao_for_menor_do_que_o_necessario():
+    response = client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "0123456789012345678901234567890",
+        "valor": 333.00,
+        "tipo": "PAGAR"
+    })
+    assert response.status_code == 422
+
+
+def test_deve_retornar_erro_quando_o_valor_for_zero_ou_menor():
+    response = client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "Test",
+        "valor": 0.00,
+        "tipo": "PAGAR"
+    })
+    assert response.status_code == 422
+
+    response = client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "Test",
+        "valor": -1.00,
+        "tipo": "PAGAR"
+    })
+    assert response.status_code == 422
+    assert response.json()['detail'][0]['loc'] == ["body", "valor"]
+
+
+def test_deve_retornar_erro_quando_o_tipo_for_invalido():
+    response = client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "Test",
+        "valor": 100.00,
+        "tipo": "Inválido"
+    })
+    assert response.status_code == 422
+    assert response.json()['detail'][0]['loc'] == ["body", "tipo"]

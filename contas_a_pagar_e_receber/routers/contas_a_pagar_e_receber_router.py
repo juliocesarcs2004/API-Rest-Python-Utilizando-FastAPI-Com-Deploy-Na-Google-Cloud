@@ -1,9 +1,10 @@
 from decimal import Decimal
+from enum import Enum
 from typing import List
 
 from fastapi import APIRouter
 from fastapi.params import Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from contas_a_pagar_e_receber.models.conta_a_pagar_e_receber_model import ContaPagarReceber
@@ -19,13 +20,17 @@ class ContaPagarReceberResponse(BaseModel):
     tipo: str  # PAGAR e RECEBER
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class ContaPagarReceberTipoEnum(str, Enum):
+    PAGAR = 'PAGAR'
+    RECEBER = 'RECEBER'
 
 
 class ContaPagarReceberRequest(BaseModel):
-    descricao: str
-    valor: Decimal
-    tipo: str  # PAGAR e RECEBER
+    descricao: str = Field(min_length=3, max_length=30)
+    valor: Decimal = Field(gt=0)
+    tipo: ContaPagarReceberTipoEnum  # PAGAR e RECEBER
 
 
 @router.get("", response_model=List[ContaPagarReceberResponse])
