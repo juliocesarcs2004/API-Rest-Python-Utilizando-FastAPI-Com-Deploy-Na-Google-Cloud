@@ -8,5 +8,5 @@ class ContaPagarReceber(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     descricao = Column(String(30))
-    valor = Column(Numeric)
+    valor = Column(Numeric(10,2))
     tipo = Column(String(30))
