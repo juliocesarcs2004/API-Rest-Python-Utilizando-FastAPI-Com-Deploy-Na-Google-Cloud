@@ -2,7 +2,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.params import Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -32,6 +32,7 @@ class ContaPagarReceberRequest(BaseModel):
     descricao: str = Field(min_length=3, max_length=30)
     valor: Decimal = Field(gt=0)
     tipo: ContaPagarReceberTipoEnum  # PAGAR e RECEBER
+    fornecedor_cliente_id: int | None = None
 
 
 @router.get("", response_model=List[ContaPagarReceberResponse])
