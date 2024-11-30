@@ -59,6 +59,15 @@ def test_deve_pegar_por_id():
     assert response_get.json()['descricao'] == 'Curso de Python'
 
 
+def test_deve_retornar_nao_encontrado_para_id_nao_existente():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response_get = client.get(f"/contas-a-pagar-e-receber/100")
+
+    assert response_get.status_code == 404
+
+
 def test_deve_criar_conta_a_pagar_e_receber():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -144,6 +153,19 @@ def test_deve_atualizar_conta_a_pagar_e_receber():
     assert float(response_put.json()['valor']) == 111.00
 
 
+def test_deve_retornar_nao_encontrado_para_id_nao_existente_na_atualizacao():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response_put = client.put(f"/contas-a-pagar-e-receber/100", json={
+        "descricao": "Curso de Python",
+        "valor": 111.00,
+        "tipo": "PAGAR"
+    })
+
+    assert response_put.status_code == 404
+
+
 def test_deve_remover_conta_a_pagar_e_receber():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -159,3 +181,11 @@ def test_deve_remover_conta_a_pagar_e_receber():
     response_put = client.delete(f"/contas-a-pagar-e-receber/{id_da_conta_a_pagar_e_receber}")
 
     assert response_put.status_code == 204
+
+def test_deve_retornar_nao_encontrado_para_id_nao_existente_na_remocao():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    response_put = client.delete(f"/contas-a-pagar-e-receber/100")
+
+    assert response_put.status_code == 404
