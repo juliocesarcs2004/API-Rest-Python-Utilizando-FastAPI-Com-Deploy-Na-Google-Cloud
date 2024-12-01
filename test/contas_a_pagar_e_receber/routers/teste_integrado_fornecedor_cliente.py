@@ -225,7 +225,7 @@ def test_deve_remover_fornecedor_cliente():
 
     response_get_all = client.get(f"/fornecedor-cliente")
 
-    assert response_get_all.json() == 0
+    assert response_get_all.json() == []
 
 
 def test_deve_retornar_nao_encontrado_para_id_nao_existente_na_remocao():

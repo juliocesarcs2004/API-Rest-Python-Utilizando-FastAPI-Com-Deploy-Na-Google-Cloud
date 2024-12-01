@@ -36,8 +36,8 @@ def test_deve_listar_contas_a_pagar_e_receber():
     response = client.get('/contas-a-pagar-e-receber')
     assert response.status_code == 200
 
-    assert response.json() == [{'id': 1, 'descricao': 'Aluguel', 'valor': '1000.50', 'tipo': 'PAGAR'},
-                               {'id': 2, 'descricao': 'Salário', 'valor': '5000.00', 'tipo': 'RECEBER'}]
+    assert response.json() == [{'id': 1, 'descricao': 'Aluguel', 'valor': '1000.50', 'tipo': 'PAGAR', 'fornecedor': None},
+                               {'id': 2, 'descricao': 'Salário', 'valor': '5000.00', 'tipo': 'RECEBER', 'fornecedor': None}]
 
 def test_deve_pegar_por_id():
     Base.metadata.drop_all(bind=engine)
@@ -75,7 +75,8 @@ def test_deve_criar_conta_a_pagar_e_receber():
     nova_conta = {
         "descricao": "Curso de Python",
         "valor": "333.00",
-        "tipo": "PAGAR"
+        "tipo": "PAGAR",
+        "fornecedor": None
     }
     nova_conta_copy = nova_conta.copy()
     nova_conta_copy["id"] = 1

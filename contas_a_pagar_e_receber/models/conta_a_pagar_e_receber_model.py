@@ -12,6 +12,6 @@ class ContaPagarReceber(Base):
     valor = Column(Numeric(10,2))
     tipo = Column(String(30))
 
-    fornecedor_cliente_id = Column(Integer, ForeignKey("fornecedor_cliente.id"), nullable=False)
+    fornecedor_cliente_id = Column(Integer, ForeignKey("fornecedor_cliente.id"), nullable=True)
     fornecedor = relationship("FornecedorCliente")
 
