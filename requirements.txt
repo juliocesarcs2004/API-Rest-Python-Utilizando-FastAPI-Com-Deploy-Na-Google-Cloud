@@ -3,10 +3,10 @@ uvicorn==0.31.0
 requests==2.32.3
 SQLAlchemy==2.0.36
 psycopg2==2.9.10
+httpx==0.28.0
 
 # TESTS
 pytest==8.3.3
-
 
 # TOOLS
 alembic==1.13.3
