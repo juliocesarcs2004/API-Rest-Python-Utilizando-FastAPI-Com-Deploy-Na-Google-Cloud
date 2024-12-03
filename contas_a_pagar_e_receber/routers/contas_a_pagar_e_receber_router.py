@@ -91,20 +91,21 @@ def atualizar_conta(id_da_conta_a_pagar_e_receber: int,
     return conta_a_pagar_e_receber
 
 
-@router.post("/{id_da_conta_a_pagar_e_receber/baixar}", response_model=ContaPagarReceberResponse, status_code=200)
+@router.post("/{id_da_conta_a_pagar_e_receber}/baixar", response_model=ContaPagarReceberResponse, status_code=200)
 def baixar_conta(id_da_conta_a_pagar_e_receber: int,
                     db: Session = Depends(get_db)) -> ContaPagarReceberResponse:
     conta_a_pagar_e_receber = busca_conta_por_id(id_da_conta_a_pagar_e_receber, db)
 
-    if conta_a_pagar_e_receber.esta_baixada and conta_a_pagar_e_receber.valor != conta_a_pagar_e_receber.valor_baixa:
+    if conta_a_pagar_e_receber.esta_baixada and conta_a_pagar_e_receber.valor == conta_a_pagar_e_receber.valor_baixa:
+        return  conta_a_pagar_e_receber
 
-        conta_a_pagar_e_receber.data_baixa = datetime.now()
-        conta_a_pagar_e_receber.esta_baixada = True
-        conta_a_pagar_e_receber.valor_baixa = conta_a_pagar_e_receber.valor
+    conta_a_pagar_e_receber.data_baixa = datetime.now()
+    conta_a_pagar_e_receber.esta_baixada = True
+    conta_a_pagar_e_receber.valor_baixa = conta_a_pagar_e_receber.valor
 
-        db.add(conta_a_pagar_e_receber)
-        db.commit()
-        db.refresh(conta_a_pagar_e_receber)
+    db.add(conta_a_pagar_e_receber)
+    db.commit()
+    db.refresh(conta_a_pagar_e_receber)
 
     return conta_a_pagar_e_receber
 
