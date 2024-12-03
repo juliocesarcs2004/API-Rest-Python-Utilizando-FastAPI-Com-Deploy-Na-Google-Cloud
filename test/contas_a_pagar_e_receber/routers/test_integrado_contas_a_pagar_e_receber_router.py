@@ -284,3 +284,20 @@ def test_deve_retornar_erro_ao_atualizar_uma_nova_conta_com_fornecedor_invalido(
     })
 
     assert response_put.status_code == 422
+
+
+def test_deve_baixar_conta():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "Curso de Python",
+        "valor": 333.00,
+        "tipo": "PAGAR"
+    })
+
+    response_acao = client.post(f"/contas-a-pagar-e-receber/1/baixar")
+
+    assert response_acao.status_code == 200
+    assert response_acao.json()['esta_baixada'] is True
+    assert response_acao.json()['valor'] == 333
