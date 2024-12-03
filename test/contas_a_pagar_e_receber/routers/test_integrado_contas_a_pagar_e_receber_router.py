@@ -315,3 +315,27 @@ def test_deve_baixar_conta():
     assert response_acao.status_code == 200
     assert response_acao.json()['esta_baixada'] is True
     assert float(response_acao.json()['valor']) == 333.00
+
+
+def test_deve_baixar_conta_modificada():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    client.post('/contas-a-pagar-e-receber', json={
+        "descricao": "Curso de Python",
+        "valor": 333.00,
+        "tipo": "PAGAR"
+    })
+
+    client.put(f"/contas-a-pagar-e-receber/1", json={
+        "descricao": "Curso de Python",
+        "valor": 444.00,
+        "tipo": "PAGAR"
+    })
+
+    response_acao = client.post(f"/contas-a-pagar-e-receber/1/baixar")
+
+    assert response_acao.status_code == 200
+    assert response_acao.json()['esta_baixada'] is True
+    assert float(response_acao.json()['valor']) == 444.00
+    assert float(response_acao.json()['valor_baixa']) == 444.00
