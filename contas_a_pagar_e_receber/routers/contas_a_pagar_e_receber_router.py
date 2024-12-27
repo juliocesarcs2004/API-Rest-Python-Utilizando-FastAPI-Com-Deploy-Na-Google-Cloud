@@ -1,3 +1,4 @@
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import List
@@ -21,6 +22,9 @@ class ContaPagarReceberResponse(BaseModel):
     descricao: str
     valor: Decimal
     tipo: str  # PAGAR e RECEBER
+    data_baixa: datetime | None = None
+    valor_baixa: Decimal | None = None
+    esta_baixada: bool | None = None
     fornecedor: FornecedorClienteResponse | None = None
 
     class Config:
@@ -78,6 +82,26 @@ def atualizar_conta(id_da_conta_a_pagar_e_receber: int,
     conta_a_pagar_e_receber.tipo = conta_a_pagar_e_receber_request.tipo
     conta_a_pagar_e_receber.valor = conta_a_pagar_e_receber_request.valor
     conta_a_pagar_e_receber.descricao = conta_a_pagar_e_receber_request.descricao
+    conta_a_pagar_e_receber.fornecedor_cliente_id = conta_a_pagar_e_receber_request.fornecedor_cliente_id
+
+    db.add(conta_a_pagar_e_receber)
+    db.commit()
+    db.refresh(conta_a_pagar_e_receber)
+
+    return conta_a_pagar_e_receber
+
+
+@router.post("/{id_da_conta_a_pagar_e_receber}/baixar", response_model=ContaPagarReceberResponse, status_code=200)
+def baixar_conta(id_da_conta_a_pagar_e_receber: int,
+                    db: Session = Depends(get_db)) -> ContaPagarReceberResponse:
+    conta_a_pagar_e_receber = busca_conta_por_id(id_da_conta_a_pagar_e_receber, db)
+
+    if conta_a_pagar_e_receber.esta_baixada and conta_a_pagar_e_receber.valor == conta_a_pagar_e_receber.valor_baixa:
+        return  conta_a_pagar_e_receber
+
+    conta_a_pagar_e_receber.data_baixa = datetime.now()
+    conta_a_pagar_e_receber.esta_baixada = True
+    conta_a_pagar_e_receber.valor_baixa = conta_a_pagar_e_receber.valor
 
     db.add(conta_a_pagar_e_receber)
     db.commit()
