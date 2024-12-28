@@ -17,7 +17,7 @@ from shared.exceptions import NotFound
 
 router = APIRouter(prefix="/contas-a-pagar-e-receber")
 
-QUANTIDADE_PERMITIDA_POR_MES = 5
+QUANTIDADE_PERMITIDA_POR_MES = 100
 
 class ContaPagarReceberResponse(BaseModel):
     id: int
