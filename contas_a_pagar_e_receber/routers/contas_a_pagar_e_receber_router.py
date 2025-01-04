@@ -58,7 +58,7 @@ def listar_contas(db: Session = Depends(get_db)) -> List[ContaPagarReceberRespon
     return db.query(ContaPagarReceber).all()
 
 
-@router.get("/previsao-gastos-do-mes", response_model=List[PrevisaoPorMes])
+@router.get("/previsao-gastos-por-mes", response_model=List[PrevisaoPorMes])
 def previsão_de_gastos_por_mes(db: Session = Depends(get_db), ano=date.today().year):
    return relatorio_gastos_previstos_por_mes_de_um_ano(db, ano)
 

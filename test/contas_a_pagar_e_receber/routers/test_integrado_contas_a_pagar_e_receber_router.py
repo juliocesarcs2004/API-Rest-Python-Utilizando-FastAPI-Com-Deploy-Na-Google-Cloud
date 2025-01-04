@@ -261,6 +261,7 @@ def test_deve_retornar_erro_ao_inserir_uma_nova_conta_com_fornecedor_invalido():
     assert response.status_code == 422
     assert response.json()['detail'] == 'Esse fornecedor não existe no banco de dados'
 
+
 def test_deve_atualizar_conta_a_pagar_e_receber_com_fornecedor_cliente_id():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -360,6 +361,7 @@ def test_deve_baixar_conta_modificada():
     assert float(response_acao.json()['valor']) == 444.00
     assert float(response_acao.json()['valor_baixa']) == 444.00
 
+
 def test_limite_de_registros_mensais():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -378,3 +380,58 @@ def test_limite_de_registros_mensais():
     assert ultima_resposta.status_code == 422
     assert ultima_resposta.json()['detail'] == 'Você não pode mais lançar contas para esse mês'
     assert all([r.status_code == 201 for r in respostas]) is True
+
+
+def test_relatorio_gastos_previstos_por_mes_de_um_ano():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    resposta = client.get("/contas-a-pagar-e-receber/previsao-gastos-por-mes")
+
+    assert resposta.status_code == 200
+    assert len(resposta.json()) == 0
+
+    valor = 10
+    mes = 1
+    for i in range(1, 49):
+
+        mes_com_zero = str(mes).zfill(2)
+
+        data = f"2025-{mes_com_zero}-01"
+
+        client.post("/contas-a-pagar-e-receber", json={
+            'descricao': 'Teste',
+            'valor': valor,
+            'tipo': 'PAGAR',
+            "data_previsao": data
+        })
+
+        valor += 10
+
+        if i % 4 == 0:
+            mes += 1
+
+    resposta = client.get("/contas-a-pagar-e-receber/previsao-gastos-por-mes")
+
+    assert resposta.status_code == 200
+    assert len(resposta.json()) == 12
+
+
+def test_relatorio_gastos_previstos_por_mes_sem_registros_no_banco():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    resposta = client.get("/contas-a-pagar-e-receber/previsao-gastos-por-mes")
+
+    assert resposta.status_code == 200
+    assert len(resposta.json()) == 0
+
+
+def test_relatorio_gastos_previstos_por_mes_sem_registros():
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+
+    resposta = client.get("/contas-a-pagar-e-receber/previsao-gastos-por-mes?ano=1990")
+
+    assert resposta.status_code == 200
+    assert len(resposta.json()) == 0
